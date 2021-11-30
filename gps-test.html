@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!-- saved from url=(0033)http://133.27.114.11/sample_MQTT/ -->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>GPSを取得・表示するするテスト</title>  
+</head>
+	
+<body>
+    <h1>位置情報を取得するテスト</h1>
+	<h3 id=alert width="100%">位置情報未取得　Please Wait...</h3>
+	<div id=hoot width="100%">
+    緯度　　：<input type="text" id="latitude"><br>
+	経度　　：<input type="text" id="longitude"><br>
+	高度　　：<input type="text" id="altitude"><br>
+	位置精度：<input type="text" id="accuracy"><br>
+	高度精度：<input type="text" id="altitudeAccuracy"><br>
+	移動方向：<input type="text" id="heading"><br>
+	速度　　：<input type="text" id="speed"><br>
+	</div>
+	<div id="map" width="100%" height="500px"></div>
+	
+	
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+	console.log("TEST")
+    var map = L.map('map').setView([36.575, 135.984], 5); // 日本を中心に設定
+    var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+      maxZoom: 19
+    });
+    tileLayer.addTo(map);
+
+  </script>
+	
+    <script>
+		//--------------------------------------------------------//
+		// 緯度
+		coordinate_N = 0 // ダミー値(鴨池の底)
+		let textbox1 = document.getElementById('latitude');
+		textbox1.value = coordinate_N;
+		// 経度
+		coordinate_E = 0 // ダミー値(鴨池の底)
+		let textbox2 = document.getElementById('longitude');
+		textbox2.value = coordinate_E;
+		// 高度
+		altitude = 0
+		let textbox3 = document.getElementById('altitude');
+		textbox3.value = altitude;
+		// 位置精度
+		accuracy = 0
+		let textbox4 = document.getElementById('accuracy');
+		textbox4.value = accuracy;
+		// 高度精度
+		altitudeAccuracy = 0
+		let textbox5 = document.getElementById('altitudeAccuracy');
+		textbox5.value = altitudeAccuracy;
+		// 移動方向
+		heading = 0
+		let textbox6 = document.getElementById('heading');
+		textbox6.value = heading;
+		// 速度
+		speed = 0
+		let textbox7 = document.getElementById('speed');
+		textbox7.value = speed;
+		//--------------------------------------------------------//
+		
+		// 日時　形式 YYYY-MM-DDThh:mm:ss.sub 2021-11-29T10:44:40.299
+		// UTCの「年」の取得方法がわからないので、年に9時間バグります
+		var date=new Date();
+		datetime_str=date.getFullYear()+"-"+(date.getUTCMonth()+1)+"-"+date.getUTCDate()+"T"+date.getUTCHours()+":"+date.getUTCMinutes()+":"+date.getUTCSeconds()+"."+date.getUTCMilliseconds();
+		console.log(datetime_str.toString());
+		
+		// ＝＝＝＝＝＝＝＝＝＝＝
+		// 　　GPS座標を取得
+		// ＝＝＝＝＝＝＝＝＝＝＝
+		// https://atmarkit.itmedia.co.jp/ait/articles/1107/14/news119.html
+		if (navigator.geolocation) {
+			// 現在の位置情報取得を実施
+			navigator.geolocation.watchPosition(
+			// 位置情報取得成功時
+			function (pos) { 
+				document.getElementById("alert").innerHTML = "【成功】位置情報取得中"
+				date=new Date();
+				datetime_str=date.getFullYear()+"-"+(date.getUTCMonth()+1)+"-"+date.getUTCDate()+"T"+date.getUTCHours()+":"+date.getUTCMinutes()+":"+date.getUTCSeconds()+"."+date.getUTCMilliseconds();
+				console.log(datetime_str.toString());
+				coordinate_N = pos.coords.latitude//緯度
+				textbox1.value = coordinate_N;
+				coordinate_E = pos.coords.longitude//経度
+				textbox2.value = coordinate_E;
+				altitude = pos.coords.altitude// 高度
+				textbox3.value = altitude;
+				accuracy = pos.coords.accuracy// 位置精度
+				textbox4.value = accuracy;
+				altitudeAccuracy = pos.coords.altitudeAccuracy// 高度精度
+				textbox5.value = altitudeAccuracy;
+				heading = pos.coords.heading// 移動方向
+				textbox6.value = heading;
+				speed = pos.coords.speed// 速度
+				textbox7.value = speed;
+				console.log("緯度：" + pos.coords.latitude + "   経度：" + pos.coords.longitude)
+				
+			},
+		    null,
+			  { enableHighAccuracy: true }
+			);
+		} else {
+			window.alert("本ブラウザではGeolocationが使えません");
+		}
+	</script>
+
+</body>
+</html>
